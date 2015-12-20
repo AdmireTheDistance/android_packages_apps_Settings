@@ -7093,4 +7093,22 @@
     <string name="listview_anticipate_overshoot_interpolator">Anticipate and overshoot</string>
     <string name="listview_bounce_interpolator">Bounce</string>
 
+    <!-- Toast animations -->
+    <string name="toast_animation_title">Toast aAnimation</string>
+    <string name="toast_animation_summary">Change system Toast animation</string>
+    <string name="toast_none_animation">None</string>
+    <string name="toast_default_animation">Default</string>
+    <string name="toast_fade_animation">Fade</string>
+    <string name="toast_SlideRight_animation">Slide Right</string>
+    <string name="toast_SlideLeft_animation">Slide Left</string>
+    <string name="toast_Xylon_animation">Xylon</string>
+    <string name="toast_Toko_animation">Toko</string>
+    <string name="toast_Tn_animation">Tn</string>
+    <string name="toast_Honami_animation">Honami</string>
+    <string name="toast_FastFade_animation">Fast Fade</string>
+    <string name="toast_GrowFade_animation">Grow Gade</string>
+    <string name="toast_GrowFadeCenter_animation">Grow Fade Center</string>
+    <string name="toast_GrowFadeBottom_animation">Grow Fade Bottom</string>
+    <string name="toast_Translucent_animation">Translucent</string>
+
 </resources>
