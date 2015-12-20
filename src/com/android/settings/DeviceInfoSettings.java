@@ -215,14 +215,8 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
                 getPreferenceScreen().removePreference(pref);
             }
         }
-        boolean enabledDevSettings = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("devSettingsShown", false);
-        if (!enabledDevSettings) {
-            getActivity().getSharedPreferences(DevelopmentSettings.PREF_FILE, Context.MODE_PRIVATE).edit().putBoolean(DevelopmentSettings.PREF_SHOW, true).apply();
-            if (mDevHitToast != null) {
-                mDevHitToast.cancel();
-            }
-            Index.getInstance(getActivity().getApplicationContext()).updateFromClassNameResource(DevelopmentSettings.class.getName(), true, true);
-            PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putBoolean("devSettingsShown", true).apply();
+        if (mDevHitToast != null) {
+            mDevHitToast.cancel();
         }
     }
 

@@ -7094,7 +7094,7 @@
     <string name="listview_bounce_interpolator">Bounce</string>
 
     <!-- Toast animations -->
-    <string name="toast_animation_title">Toast aAnimation</string>
+    <string name="toast_animation_title">Toast Animation</string>
     <string name="toast_animation_summary">Change system Toast animation</string>
     <string name="toast_none_animation">None</string>
     <string name="toast_default_animation">Default</string>

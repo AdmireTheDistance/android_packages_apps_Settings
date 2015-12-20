@@ -571,6 +571,13 @@ public class SettingsActivity extends Activity
         mDevelopmentPreferences = getSharedPreferences(DevelopmentSettings.PREF_FILE,
                 Context.MODE_PRIVATE);
 
+        boolean enabledDevSettings = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("devSettingsShown", false);
+        if (!enabledDevSettings) {
+            getActivity().getSharedPreferences(DevelopmentSettings.PREF_FILE, Context.MODE_PRIVATE).edit().putBoolean(DevelopmentSettings.PREF_SHOW, true).apply();
+            Index.getInstance(this.getApplicationContext()).updateFromClassNameResource(DevelopmentSettings.class.getName(), true, true);
+            PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("devSettingsShown", true).apply();
+        }
+
         // Getting Intent properties can only be done after the super.onCreate(...)
         final String initialFragmentName = intent.getStringExtra(EXTRA_SHOW_FRAGMENT);
 
@@ -1245,9 +1252,6 @@ public class SettingsActivity extends Activity
     }
 
     private void updateTilesList(List<DashboardCategory> target) {
-        final boolean showDev = mDevelopmentPreferences.getBoolean(
-                DevelopmentSettings.PREF_SHOW,
-                android.os.Build.TYPE.equals("eng"));
 
         final UserManager um = (UserManager) getSystemService(Context.USER_SERVICE);
 
@@ -1314,12 +1318,7 @@ public class SettingsActivity extends Activity
                     if (!hasPrintingSupport) {
                         removeTile = true;
                     }
-                } else if (id == R.id.development_settings) {
-                    if (!showDev || um.hasUserRestriction(
-                            UserManager.DISALLOW_DEBUGGING_FEATURES)) {
-                        removeTile = true;
-                    }
-                }
+                } 
 
                 if (UserHandle.MU_ENABLED && UserHandle.myUserId() != 0
                         && !ArrayUtils.contains(SETTINGS_FOR_RESTRICTED, id)) {
