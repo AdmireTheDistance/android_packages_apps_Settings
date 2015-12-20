@@ -309,7 +309,11 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         initPulse((PreferenceCategory) findPreference(KEY_CATEGORY_LIGHTS));
 
         mToastAnimation = (ListPreference) findPreference(KEY_TOAST_ANIMATION);
-        mToastAnimation.setSummary(mToastAnimation.getEntry());
+        if (mToastAnimation.getEntry() != null) {
+            mToastAnimation.setSummary(mToastAnimation.getEntry());
+        } else {
+            mToastAnimation.setSummary("Default");
+        }
         int currentToastAnimation = Settings.System.getInt(getContentResolver(), Settings.System.TOAST_ANIMATION, 1);
         mToastAnimation.setValueIndex(currentToastAnimation);
         mToastAnimation.setSummary(mToastAnimation.getEntries()[currentToastAnimation]);
