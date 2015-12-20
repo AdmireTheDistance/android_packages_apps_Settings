@@ -247,6 +247,7 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
                 }
             }
         } else if (preference.getKey().equals(KEY_BUILD_NUMBER)) {
+            mDevHitCountdown = 0;
             // Don't enable developer options for secondary users.
             if (UserHandle.myUserId() != UserHandle.USER_OWNER) return true;
 
