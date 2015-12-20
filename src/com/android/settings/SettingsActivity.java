@@ -573,7 +573,7 @@ public class SettingsActivity extends Activity
 
         boolean enabledDevSettings = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("devSettingsShown", false);
         if (!enabledDevSettings) {
-            thisgetSharedPreferences(DevelopmentSettings.PREF_FILE, Context.MODE_PRIVATE).edit().putBoolean(DevelopmentSettings.PREF_SHOW, true).apply();
+            this.getSharedPreferences(DevelopmentSettings.PREF_FILE, Context.MODE_PRIVATE).edit().putBoolean(DevelopmentSettings.PREF_SHOW, true).apply();
             Index.getInstance(this.getApplicationContext()).updateFromClassNameResource(DevelopmentSettings.class.getName(), true, true);
             PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("devSettingsShown", true).apply();
         }
