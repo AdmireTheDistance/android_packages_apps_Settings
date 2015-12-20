@@ -222,7 +222,7 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
                 mDevHitToast.cancel();
             }
             Index.getInstance(getActivity().getApplicationContext()).updateFromClassNameResource(DevelopmentSettings.class.getName(), true, true);
-            PreferenceManager.getDefaultSharedPreferences(getActivity()).putBoolean("devSettingsShown", true).apply();
+            PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putBoolean("devSettingsShown", true).apply();
         }
     }
 
