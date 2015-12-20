@@ -34,6 +34,7 @@ import android.os.UserHandle;
 import android.os.UserManager;
 import android.preference.Preference;
 import android.preference.PreferenceGroup;
+import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.provider.SearchIndexableResource;
 import android.provider.Settings;
@@ -214,14 +215,20 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
                 getPreferenceScreen().removePreference(pref);
             }
         }
+        boolean enabledDevSettings = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("devSettingsShown", false);
+        if (!enabledDevSettings) {
+            getActivity().getSharedPreferences(DevelopmentSettings.PREF_FILE, Context.MODE_PRIVATE).edit().putBoolean(DevelopmentSettings.PREF_SHOW, true).apply();
+            if (mDevHitToast != null) {
+                mDevHitToast.cancel();
+            }
+            Index.getInstance(getActivity().getApplicationContext()).updateFromClassNameResource(DevelopmentSettings.class.getName(), true, true);
+            PreferenceManager.getDefaultSharedPreferences(getActivity()).putBoolean("devSettingsShown", true).apply();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mDevHitCountdown = getActivity().getSharedPreferences(DevelopmentSettings.PREF_FILE,
-                Context.MODE_PRIVATE).getBoolean(DevelopmentSettings.PREF_SHOW,
-                        android.os.Build.TYPE.equals("eng")) ? -1 : TAPS_TO_BE_A_DEVELOPER;
         mDevHitToast = null;
     }
 
@@ -247,48 +254,14 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
                 }
             }
         } else if (preference.getKey().equals(KEY_BUILD_NUMBER)) {
-            mDevHitCountdown = 0;
             // Don't enable developer options for secondary users.
             if (UserHandle.myUserId() != UserHandle.USER_OWNER) return true;
 
             final UserManager um = (UserManager) getSystemService(Context.USER_SERVICE);
             if (um.hasUserRestriction(UserManager.DISALLOW_DEBUGGING_FEATURES)) return true;
-
-            if (mDevHitCountdown > 0) {
-                mDevHitCountdown--;
-                if (mDevHitCountdown == 0) {
-                    getActivity().getSharedPreferences(DevelopmentSettings.PREF_FILE,
-                            Context.MODE_PRIVATE).edit().putBoolean(
-                                    DevelopmentSettings.PREF_SHOW, true).apply();
-                    if (mDevHitToast != null) {
-                        mDevHitToast.cancel();
-                    }
-                    mDevHitToast = Toast.makeText(getActivity(), R.string.show_dev_on_cm,
-                            Toast.LENGTH_LONG);
-                    mDevHitToast.show();
-                    // This is good time to index the Developer Options
-                    Index.getInstance(
-                            getActivity().getApplicationContext()).updateFromClassNameResource(
-                                    DevelopmentSettings.class.getName(), true, true);
-
-                } else if (mDevHitCountdown > 0
-                        && mDevHitCountdown < (TAPS_TO_BE_A_DEVELOPER-2)) {
-                    if (mDevHitToast != null) {
-                        mDevHitToast.cancel();
-                    }
-                    mDevHitToast = Toast.makeText(getActivity(), getResources().getQuantityString(
-                            R.plurals.show_dev_countdown_cm, mDevHitCountdown, mDevHitCountdown),
-                            Toast.LENGTH_SHORT);
-                    mDevHitToast.show();
-                }
-            } else if (mDevHitCountdown < 0) {
-                if (mDevHitToast != null) {
-                    mDevHitToast.cancel();
-                }
-                mDevHitToast = Toast.makeText(getActivity(), R.string.show_dev_already_cm,
+            mDevHitToast = Toast.makeText(getActivity(), R.string.show_dev_already_cm,
                         Toast.LENGTH_LONG);
                 mDevHitToast.show();
-            }
         } else if (preference.getKey().equals(KEY_DEVICE_FEEDBACK)) {
             sendFeedback();
         } else if(preference.getKey().equals(KEY_SYSTEM_UPDATE_SETTINGS)) {
