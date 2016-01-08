@@ -93,7 +93,10 @@
         android:key="system"
         android:title="@string/category_system">
     
-        
+        <PreferenceScreen
+        	android:key="volume_steps"
+        	android:title="@string/volume_steps_title"
+        	android:fragment="com.android.settings.morningstar.VolumeSteps" />
 
     </PreferenceCategory>
 
