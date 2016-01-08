@@ -32,6 +32,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.RingtoneManager;
@@ -803,12 +804,35 @@ public class SetupActionsFragment extends SettingsPreferenceFragment
             throw new UnsupportedOperationException("connection setting cannot be null");
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        final String[] connectionNames =
-                getResources().getStringArray(R.array.profile_networkmode_entries_4g);
+        boolean allow2g = true;
 
-        int defaultIndex = ConnectionOverrideItem.CM_MODE_UNCHANGED; // no action
+        try {
+            final Context telephonyContext = getActivity().createPackageContext("com.android.phone", 0);
+            if (telephonyContext != null) {
+                int identifier = telephonyContext.getResources().getIdentifier("config_prefer_2g", "bool", telephonyContext.getPackageName());
+                if (identifier > 0) {
+                    allow2g = telephonyContext.getResources().getBoolean(identifier);
+                    android.util.Log.e("ro", "allow2g: " + allow2g);
+                }
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        final String[] connectionNames =
+                getResources().getStringArray(allow2g ? R.array.profile_networkmode_entries_4g
+                        : R.array.profile_networkmode_entries_no_2g);
+        final String[] connectionValues = getResources().getStringArray(allow2g ? R.array.profile_networkmode_values_4g : R.array.profile_networkmode_values_no_2g); 
+
+        int defaultIndex = connectionValues.length - 1;
         if (setting.isOverride()) {
-            defaultIndex = setting.getValue();
+            final int value = setting.getValue();
+            for (int i = 0; i < connectionValues.length; i++) {
+                if (Integer.parseInt(connectionValues[i]) == value) {
+                    defaultIndex = i;
+                    break;
+                }
+            }
         }
 
         builder.setTitle(ConnectionOverrideItem.getConnectionTitle(setting.getConnectionId()));
@@ -822,7 +846,7 @@ public class SetupActionsFragment extends SettingsPreferenceFragment
                                 break;
                             default:
                                 setting.setOverride(true);
-                                setting.setValue(item);
+                                setting.setValue(Integer.parseInt(connectionValues[item]));
                         }
                         mProfile.setConnectionSettings(setting);
                         mAdapter.notifyDataSetChanged();
