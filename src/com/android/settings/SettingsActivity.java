@@ -293,7 +293,8 @@ public class SettingsActivity extends Activity
             R.id.print_settings,
             R.id.home_settings,
             R.id.dashboard,
-            R.id.privacy_settings_cyanogenmod
+            R.id.privacy_settings_cyanogenmod,
+            R.id.extra_settings
     };
 
     private static final String[] ENTRY_FRAGMENTS = {
@@ -374,7 +375,8 @@ public class SettingsActivity extends Activity
             BlacklistSettings.class.getName(),
             ProfilesSettings.class.getName(),
             ContributorsCloudFragment.class.getName(),
-            NotificationManagerSettings.class.getName()
+            NotificationManagerSettings.class.getName(),
+            com.android.settings.morningstar.ExtraSettings.class.getName()
     };
 
 

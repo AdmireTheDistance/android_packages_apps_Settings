@@ -337,6 +337,14 @@
                 android:icon="@drawable/ic_settings_development"
                 />
 
+        <!-- Extras -->
+        <dashboard-tile
+        	android:id="@+id/extra_settings"
+        	android:title="@string/extra_settings_title"
+        	android:fragment="com.android.settings.morningstar.ExtraSettings"
+        	android:icon="@drawable/ic_settings_extra"
+        	/>
+
         <!-- About Device -->
         <dashboard-tile
                 android:id="@+id/about_settings"

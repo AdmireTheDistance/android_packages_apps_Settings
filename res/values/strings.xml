@@ -7070,7 +7070,7 @@
     <string name="saving_protected_components">Saving component state</string>
 
     <!-- ListView animation -->
-    <string name="listview_animation_title">ListView Animation</string>
+    <string name="listview_animation_title">ListView animation</string>
     <string name="listview_off">Default</string>
     <string name="listview_wave_left">Wave (left)</string>
     <string name="listview_wave_right">Wave (right)</string>
@@ -7084,7 +7084,7 @@
     <string name="listview_translate_right">Translate (right)</string>
 
     <!-- ListView interpolator -->
-    <string name="listview_interpolator_title">ListView Interpolator</string>
+    <string name="listview_interpolator_title">ListView interpolator</string>
     <string name="listview_accelerate_interpolator">Accelerate</string>
     <string name="listview_decelerate_interpolator">Decelerate</string>
     <string name="listview_accelerate_decelerate_interpolator">Accelerate and decelerate</string>
@@ -7094,25 +7094,25 @@
     <string name="listview_bounce_interpolator">Bounce</string>
 
     <!-- Toast animations -->
-    <string name="toast_animation_title">Toast Animation</string>
+    <string name="toast_animation_title">Toast animation</string>
     <string name="toast_animation_summary">Change system Toast animation</string>
     <string name="toast_none_animation">None</string>
     <string name="toast_default_animation">Default</string>
     <string name="toast_fade_animation">Fade</string>
-    <string name="toast_SlideRight_animation">Slide Right</string>
-    <string name="toast_SlideLeft_animation">Slide Left</string>
+    <string name="toast_SlideRight_animation">Slide right</string>
+    <string name="toast_SlideLeft_animation">Slide left</string>
     <string name="toast_Xylon_animation">Xylon</string>
     <string name="toast_Toko_animation">Toko</string>
     <string name="toast_Tn_animation">Tn</string>
     <string name="toast_Honami_animation">Honami</string>
-    <string name="toast_FastFade_animation">Fast Fade</string>
-    <string name="toast_GrowFade_animation">Grow Gade</string>
-    <string name="toast_GrowFadeCenter_animation">Grow Fade Center</string>
-    <string name="toast_GrowFadeBottom_animation">Grow Fade Bottom</string>
+    <string name="toast_FastFade_animation">Fast fade</string>
+    <string name="toast_GrowFade_animation">Grow fade</string>
+    <string name="toast_GrowFadeCenter_animation">Grow fade center</string>
+    <string name="toast_GrowFadeBottom_animation">Grow fade bottom</string>
     <string name="toast_Translucent_animation">Translucent</string>
 
     <!-- Network traffic -->
-    <string name="network_traffic_title">Network Traffic</string>
+    <string name="network_traffic_title">Network traffic</string>
     <string name="show_network_traffic_state">Status bar traffic monitor</string>
     <string name="network_traffic_summary">Enable various network traffic options in statusbar</string>
     <string name="show_network_traffic_unit">Display unit</string>
@@ -7120,7 +7120,7 @@
     <string name="show_network_traffic_disable">Disabled</string>
     <string name="show_network_traffic_up">Outgoing</string>
     <string name="show_network_traffic_down">Incoming</string>
-    <string name="show_network_traffic_all">Outgoing and incoming</string>
+    <string name="show_network_traffic_all">Incoming and outgoing</string>
     <string name="show_network_traffic_bit">Bits per second</string>
     <string name="show_network_traffic_byte">Bytes per second</string>
     <string name="show_network_traffic_500">500 ms</string>
@@ -7156,5 +7156,20 @@
     <string name="recents_clear_all_location_bottom_center">Bottom center</string>
     <string name="recents_clear_all_dismiss_all_title">Clear all tasks</string>
     <string name="recents_clear_all_dismiss_all_summary">Include foreground task when clearing all</string>
+
+    <string name="extra_settings_title">Extras</string>
+    <string name="category_animations">Animations</string>
+    <string name="category_recents">Recents</string>
+    <string name="category_system">System</string>
+    <string name="boot_animation_title">Boot animation</string>
+    <string name="boot_animation_summary">Choose a new boot animation</string>
+    <string name="boot_animation_preview">Boot Animation Preview</string>
+    <string name="apply">Apply</string>
+    <string name="set_custom">Set custom...</string>
+    <string name="no_file_manager">Please install a file manager and try again</string>
+    <string name="loading_preview">Loading preview...</string>
+    <string name="error_reading_zip">Error reading zip file</string>
+    <string name="error_loading_preview">Error loading preview...</string>
+    <string name="category_statusbar">Status Bar</string>
 
 </resources>
