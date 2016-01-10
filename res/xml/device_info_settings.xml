@@ -155,4 +155,13 @@
                 android:title="@string/selinux_status"
                 android:summary="@string/selinux_status_enforcing"/>
 
+        <Preference android:key="morningstar"
+        	    android:title="@string/morningstar_title"
+        	    android:summary="@string/morningstar_summary"
+        	    android:icon="@drawable/morningstar">
+        	        <intent
+        	        	android:action="android.intent.action.VIEW"
+        	        	android:data="http://forum.xda-developers.com/donatetome.php?u=293887" />
+        </Preference>
+
 </PreferenceScreen>

@@ -75,6 +75,12 @@
     	   android:defaultValue="true"
     	   android:dependency="show_clear_all_recents" />
 
+        <com.android.settings.SystemSettingSwitchPreference
+            android:key="show_system_info_recents"
+            android:title="@string/show_recents_system_info_title"
+            android:summary="@string/show_recents_system_info_summary"
+            android:defaultValue="false" />
+
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -96,6 +102,7 @@
         <PreferenceScreen
         	android:key="volume_steps"
         	android:title="@string/volume_steps_title"
+        	android:summary="@string/volume_steps_summary"
         	android:fragment="com.android.settings.morningstar.VolumeSteps" />
 
     </PreferenceCategory>

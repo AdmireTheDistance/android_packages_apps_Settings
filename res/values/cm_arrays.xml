@@ -70,7 +70,7 @@
         <item>5</item>
     </string-array>
 
-    <string-array name="profile_networkmod_entries_no_2g" translatable="false">
+    <string-array name="profile_networkmode_entries_no_2g" translatable="false">
         <item>@string/profile_networkmode_3g</item>
         <item>@string/profile_networkmode_4g</item>
         <item>@string/profile_networkmode_2g3g</item>

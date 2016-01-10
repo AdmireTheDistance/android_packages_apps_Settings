@@ -1500,7 +1500,7 @@
         <item>5</item>
     </string-array>
 
-    <string-array name="volum_steps_entries" translatable="false">
+    <string-array name="volume_steps_entries" translatable="false">
     	<item>@string/volume_steps_60</item>
     	<item>@string/volume_steps_45</item>
     	<item>@string/volume_steps_30</item>
