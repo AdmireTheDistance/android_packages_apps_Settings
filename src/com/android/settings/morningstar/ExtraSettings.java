@@ -67,6 +67,8 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.cyanogenmod.internal.logging.CMMetricsLogger;
+
 public class ExtraSettings extends SettingsPreferenceFragment implements
         Preference.OnPreferenceChangeListener {
 
@@ -166,7 +168,7 @@ public class ExtraSettings extends SettingsPreferenceFragment implements
 
     @Override
     protected int getMetricsCategory() {
-        return MetricsLogger.DONT_TRACK_ME_BRO;
+        return CMMetricsLogger.DONT_LOG;
     }
 
     @Override
