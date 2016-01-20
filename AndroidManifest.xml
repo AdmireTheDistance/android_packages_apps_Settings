@@ -36,6 +36,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="com.android.certinstaller.INSTALL_AS_USER" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.OVERRIDE_WIFI_CONFIG" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CLEAR_APP_USER_DATA" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -1117,7 +1118,7 @@
         </activity>
 
         <activity android:name="Settings$AppOpsSummaryActivity"
-                android:label="@string/app_ops_settings"
+                android:label="@string/privacy_guard_manager_title"
                 android:taskAffinity=""
                 android:excludeFromRecents="true">
             <intent-filter>
@@ -1132,6 +1133,30 @@
             <meta-data android:name="com.android.settings.TOP_LEVEL_HEADER_ID"
                 android:resource="@id/application_settings" />
         </activity>
+
+        <!-- Still need a top-level activity for showing app ops details.  Aliasing
+             trick is so the code that is now a fragment can still be called
+             AppOpsDetails. -->
+        <activity android:name=".applications.AppOpsDetailsTop"
+                  android:label="@string/privacy_guard_manager_title"
+                  android:exported="true"
+                  android:taskAffinity=""
+                  android:excludeFromRecents="true"
+                  android:parentActivityName="Settings$AppOpsSummaryActivity">
+        </activity>
+
+        <!-- Keep compatibility with old shortcuts. -->
+        <activity-alias android:name=".applications.AppOpsDetails"
+                android:label="@string/privacy_guard_manager_title"
+                android:exported="true"
+                android:excludeFromRecents="true"
+                android:targetActivity=".applications.AppOpsDetailsTop">
+            <intent-filter>
+                <action android:name="android.settings.APP_OPS_DETAILS_SETTINGS" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="package" />
+            </intent-filter>
+        </activity-alias>
 
         <activity android:name="Settings$LocationSettingsActivity"
                 android:label="@string/location_settings_title"
@@ -2428,7 +2453,7 @@
                        android:resource="@id/sound_settings" />
         </activity>
 
-        <activity android:name="Settings$NotificationSettingsActivity"
+        <activity android:name="Settings$SoundSettingsActivity"
                 android:label="@string/notification_settings"
                 android:exported="true"
                 android:taskAffinity="">
@@ -2442,7 +2467,7 @@
                 <category android:name="com.android.settings.SHORTCUT" />
             </intent-filter>
             <meta-data android:name="com.android.settings.FRAGMENT_CLASS"
-                android:value="com.android.settings.notification.NotificationSettings" />
+                android:value="com.android.settings.notification.SoundSettings" />
             <meta-data android:name="com.android.settings.TOP_LEVEL_HEADER_ID"
                 android:resource="@id/sound_settings" />
             <meta-data android:name="com.android.settings.PRIMARY_PROFILE_CONTROLLED"
@@ -2453,7 +2478,7 @@
         <activity-alias android:name="Settings$SoundSettingsActivity"
                 android:label="@string/notification_settings"
                 android:taskAffinity=""
-                android:targetActivity="Settings$NotificationSettingsActivity">
+                android:targetActivity="Settings$SoundSettingsActivity">
             <intent-filter android:priority="1">
                 <action android:name="com.android.settings.SOUND_SETTINGS" />
                 <action android:name="android.settings.SOUND_SETTINGS" />
@@ -2465,7 +2490,7 @@
                 <category android:name="android.intent.category.VOICE_LAUNCH" />
             </intent-filter>
             <meta-data android:name="com.android.settings.FRAGMENT_CLASS"
-                android:value="com.android.settings.notification.NotificationSettings" />
+                android:value="com.android.settings.notification.SoundSettings" />
             <meta-data android:name="com.android.settings.TOP_LEVEL_HEADER_ID"
                 android:resource="@id/sound_settings" />
             <meta-data android:name="com.android.settings.PRIMARY_PROFILE_CONTROLLED"
@@ -2476,9 +2501,9 @@
         <activity-alias android:name="SoundSettings"
                 android:label="@string/notification_settings"
                 android:exported="true"
-                android:targetActivity="Settings$NotificationSettingsActivity">
+                android:targetActivity="Settings$SoundSettingsActivity">
             <meta-data android:name="com.android.settings.FRAGMENT_CLASS"
-                android:value="com.android.settings.notification.NotificationSettings" />
+                android:value="com.android.settings.notification.SoundSettings" />
             <meta-data android:name="com.android.settings.TOP_LEVEL_HEADER_ID"
                 android:resource="@id/sound_settings" />
         </activity-alias>
@@ -2501,6 +2526,23 @@
                 android:resource="@id/sound_settings" />
             <meta-data android:name="com.android.settings.PRIMARY_PROFILE_CONTROLLED"
                 android:value="true" />
+        </activity>
+
+        <!-- Notification manager -->
+        <activity android:name="Settings$NotificationManagerActivity"
+                android:label="@string/notification_manager"
+                android:exported="true"
+                android:taskAffinity="">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.settings.NOTIFICATION_MANAGER" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="com.android.settings.SHORTCUT" />
+            </intent-filter>
+            <meta-data android:name="com.android.settings.FRAGMENT_CLASS"
+                android:value="com.android.settings.notification.NotificationManagerSettings" />
+            <meta-data android:name="com.android.settings.TOP_LEVEL_HEADER_ID"
+                android:resource="@id/notification_manager" />
         </activity>
 
         <!-- Show apps for which application-level notification settings are applicable -->

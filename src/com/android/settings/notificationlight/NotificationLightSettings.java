@@ -41,7 +41,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.android.internal.logging.MetricsLogger;
 import com.android.settings.R;
 import com.android.settings.SettingsPreferenceFragment;
 import com.android.settings.cyanogenmod.PackageListAdapter;
@@ -55,6 +54,7 @@ import java.util.List;
 import java.util.Map;
 
 import cyanogenmod.providers.CMSettings;
+import org.cyanogenmod.internal.logging.CMMetricsLogger;
 
 public class NotificationLightSettings extends SettingsPreferenceFragment implements
         Preference.OnPreferenceChangeListener, AdapterView.OnItemLongClickListener {
@@ -96,11 +96,8 @@ public class NotificationLightSettings extends SettingsPreferenceFragment implem
         PreferenceGroup mAdvancedPrefs = (PreferenceGroup) prefSet.findPreference("advanced_section");
 
         // Get the system defined default notification color
-        mDefaultColor = resources.getColor(com.android.internal.R.color.config_defaultNotificationColor);
-        if (mDefaultColor == Color.WHITE) {
-            // We cannot properly show white in the UI, change it to off white (#eeeeee)
-            mDefaultColor = 0xFFEEEEEE;
-        }
+        mDefaultColor =
+                resources.getColor(com.android.internal.R.color.config_defaultNotificationColor);
 
         mDefaultLedOn = resources.getInteger(
                 com.android.internal.R.integer.config_defaultNotificationLedOn);
@@ -167,7 +164,7 @@ public class NotificationLightSettings extends SettingsPreferenceFragment implem
 
     @Override
     protected int getMetricsCategory() {
-        return MetricsLogger.DONT_TRACK_ME_BRO;
+        return CMMetricsLogger.NOTIFICATION_LIGHT_SETTINGS;
     }
 
     @Override

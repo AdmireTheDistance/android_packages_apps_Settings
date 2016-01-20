@@ -28,6 +28,7 @@ import android.os.ServiceManager;
 import android.telecom.PhoneAccount;
 import android.telecom.PhoneAccountHandle;
 import android.telecom.TelecomManager;
+import android.telephony.SmsManager;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
@@ -205,6 +206,11 @@ public class SimDialogActivity extends Activity {
                                 } catch (NullPointerException ex) {
                                     Log.e(TAG, "NullPointerException @setSMSPromptEnabled" + ex);
                                 }
+
+                                //Regardless, ignore the secondary telephony framework
+                                if (mExtTelephony == null) {
+                                    SmsManager.getDefault().setSMSPromptEnabled(isSmsPrompt);
+                                }
                                 break;
                             default:
                                 throw new IllegalArgumentException("Invalid dialog type "
@@ -249,7 +255,7 @@ public class SimDialogActivity extends Activity {
                 }
             }
         } else if ((id == SMS_PICK)){
-            list.add(getResources().getString(R.string.sim_sms_ask_first_prefs_title));
+            list.add(getResources().getString(R.string.sim_calls_ask_first_prefs_title));
             smsSubInfoList.add(null);
             for (int i = 0; i < selectableSubInfoLength; ++i) {
                 final SubscriptionInfo sir = subInfoList.get(i);

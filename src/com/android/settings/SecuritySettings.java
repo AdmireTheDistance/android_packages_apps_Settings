@@ -61,6 +61,7 @@ import com.android.settings.search.BaseSearchIndexProvider;
 import com.android.settings.search.Index;
 import com.android.settings.search.Indexable;
 import com.android.settings.search.SearchIndexableRaw;
+import cyanogenmod.providers.CMSettings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,11 +95,14 @@ public class SecuritySettings extends SettingsPreferenceFragment
     private static final String KEY_MANAGE_TRUST_AGENTS = "manage_trust_agents";
     private static final String KEY_FINGERPRINT_SETTINGS = "fingerprint_settings";
 
+    private static final String KEY_LOCKSCREEN_ENABLED_INTERNAL = "lockscreen_enabled_internally";
+
     private static final int SET_OR_CHANGE_LOCK_METHOD_REQUEST = 123;
     private static final int CHANGE_TRUST_AGENT_SETTINGS = 126;
 
     // Misc Settings
     private static final String KEY_SIM_LOCK = "sim_lock";
+    private static final String KEY_SIM_LOCK_SETTINGS = "sim_lock_settings";
     private static final String KEY_SHOW_PASSWORD = "show_password";
     private static final String KEY_CREDENTIAL_STORAGE_TYPE = "credential_storage_type";
     private static final String KEY_RESET_CREDENTIALS = "credentials_reset";
@@ -148,6 +152,8 @@ public class SecuritySettings extends SettingsPreferenceFragment
 
     private Preference mOwnerInfoPref;
     private int mFilterType = TYPE_SECURITY_EXTRA;
+
+    private Preference mLockscreenDisabledPreference;
 
     @Override
     protected int getMetricsCategory() {
@@ -233,6 +239,16 @@ public class SecuritySettings extends SettingsPreferenceFragment
         // Add options for device encryption
         mIsPrimary = MY_USER_ID == UserHandle.USER_OWNER;
 
+        if (CMSettings.Secure.getIntForUser(getContentResolver(),
+                CMSettings.Secure.LOCKSCREEN_INTERNALLY_ENABLED, 1, UserHandle.USER_OWNER) != 1) {
+            // lock screen is disabled by quick settings tile, let the user know!~
+            mLockscreenDisabledPreference = new Preference(getActivity());
+            mLockscreenDisabledPreference.setKey(KEY_LOCKSCREEN_ENABLED_INTERNAL);
+            mLockscreenDisabledPreference.setTitle(R.string.lockscreen_disabled_by_qs_tile_title);
+            mLockscreenDisabledPreference.setSummary(R.string.lockscreen_disabled_by_qs_tile_summary);
+            root.addPreference(mLockscreenDisabledPreference);
+        }
+
         if (mFilterType == TYPE_LOCKSCREEN_EXTRA) {
             // Add options for lock/unlock screen
             final int resid = getResIdForLockUnlockScreen(getActivity(), mLockPatternUtils);
@@ -295,17 +311,65 @@ public class SecuritySettings extends SettingsPreferenceFragment
             addPreferencesFromResource(R.xml.security_settings_misc);
 
             // Do not display SIM lock for devices without an Icc card
-            TelephonyManager tm = TelephonyManager.getDefault();
             CarrierConfigManager cfgMgr = (CarrierConfigManager)
                     getActivity().getSystemService(Context.CARRIER_CONFIG_SERVICE);
             PersistableBundle b = cfgMgr.getConfig();
-            if (!mIsPrimary || !isSimIccReady() ||
-                    b.getBoolean(CarrierConfigManager.KEY_HIDE_SIM_LOCK_SETTINGS_BOOL)) {
-                root.removePreference(root.findPreference(KEY_SIM_LOCK));
+            PreferenceGroup iccLockGroup = (PreferenceGroup) root.findPreference(KEY_SIM_LOCK);
+            Preference iccLock = root.findPreference(KEY_SIM_LOCK_SETTINGS);
+
+            if (!mIsPrimary
+                    || b.getBoolean(CarrierConfigManager.KEY_HIDE_SIM_LOCK_SETTINGS_BOOL)) {
+                root.removePreference(iccLockGroup);
             } else {
-                // Disable SIM lock if there is no ready SIM card.
-                root.findPreference(KEY_SIM_LOCK).setEnabled(isSimReady());
+                SubscriptionManager subMgr = SubscriptionManager.from(getActivity());
+                TelephonyManager tm = TelephonyManager.getDefault();
+                int numPhones = tm.getPhoneCount();
+                boolean hasAnySim = false;
+
+                for (int i = 0; i < numPhones; i++) {
+                    final Preference pref;
+
+                    if (numPhones > 1) {
+                        SubscriptionInfo sir = subMgr.getActiveSubscriptionInfoForSimSlotIndex(i);
+                        if (sir == null) {
+                            continue;
+                        }
+
+                        pref = new Preference(getActivity());
+                        pref.setOrder(iccLock.getOrder());
+                        pref.setTitle(getString(R.string.sim_card_lock_settings_title, i + 1));
+                        pref.setSummary(sir.getDisplayName());
+
+                        Intent intent = new Intent(getActivity(), IccLockSettings.class);
+                        intent.putExtra(IccLockSettings.EXTRA_SUB_ID, sir.getSubscriptionId());
+                        intent.putExtra(IccLockSettings.EXTRA_SUB_DISPLAY_NAME,
+                                sir.getDisplayName());
+                        pref.setIntent(intent);
+
+                        iccLockGroup.addPreference(pref);
+                    } else {
+                        pref = iccLock;
+                    }
+
+                    // Do not display SIM lock for devices without an Icc card
+                    hasAnySim |= tm.hasIccCard(i);
+
+                    int simState = tm.getSimState(i);
+                    boolean simPresent = simState != TelephonyManager.SIM_STATE_ABSENT
+                            && simState != TelephonyManager.SIM_STATE_UNKNOWN
+                            && simState != TelephonyManager.SIM_STATE_CARD_IO_ERROR;
+                    if (!simPresent) {
+                        pref.setEnabled(false);
+                    }
+                }
+
+                if (!hasAnySim) {
+                    root.removePreference(iccLockGroup);
+                } else if (numPhones > 1) {
+                    iccLockGroup.removePreference(iccLock);
+                }
             }
+
             if (Settings.System.getInt(getContentResolver(),
                     Settings.System.LOCK_TO_APP_ENABLED, 0) != 0) {
                 root.findPreference(KEY_SCREEN_PINNING).setSummary(
@@ -440,43 +504,6 @@ public class SecuritySettings extends SettingsPreferenceFragment
         }
     }
 
-    /* Return true if a there is a Slot that has Icc.
-     */
-    private boolean isSimIccReady() {
-        TelephonyManager tm = TelephonyManager.getDefault();
-        final List<SubscriptionInfo> subInfoList =
-                mSubscriptionManager.getActiveSubscriptionInfoList();
-
-        if (subInfoList != null) {
-            for (SubscriptionInfo subInfo : subInfoList) {
-                if (tm.hasIccCard(subInfo.getSimSlotIndex())) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /* Return true if a SIM is ready for locking.
-     * TODO: consider adding to TelephonyManager or SubscritpionManasger.
-     */
-    private boolean isSimReady() {
-        int simState = TelephonyManager.SIM_STATE_UNKNOWN;
-        final List<SubscriptionInfo> subInfoList =
-                mSubscriptionManager.getActiveSubscriptionInfoList();
-        if (subInfoList != null) {
-            for (SubscriptionInfo subInfo : subInfoList) {
-                simState = TelephonyManager.getDefault().getSimState(subInfo.getSimSlotIndex());
-                if((simState != TelephonyManager.SIM_STATE_ABSENT) &&
-                            (simState != TelephonyManager.SIM_STATE_UNKNOWN)){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     private static ArrayList<TrustAgentComponentInfo> getActiveTrustAgents(
             PackageManager pm, LockPatternUtils utils, DevicePolicyManager dpm) {
         ArrayList<TrustAgentComponentInfo> result = new ArrayList<TrustAgentComponentInfo>();
@@ -554,8 +581,10 @@ public class SecuritySettings extends SettingsPreferenceFragment
         }
     }
 
-    private void updateSmsSecuritySummary(int i) {
-        String message = getString(R.string.sms_security_check_limit_summary, i);
+    private void updateSmsSecuritySummary(int selection) {
+        String message = selection > 0
+                ? getString(R.string.sms_security_check_limit_summary, selection)
+                : getString(R.string.sms_security_check_limit_summary_none);
         mSmsSecurityCheck.setSummary(message);
     }
 
@@ -691,11 +720,18 @@ public class SecuritySettings extends SettingsPreferenceFragment
             mTrustAgentClickIntent = preference.getIntent();
             boolean confirmationLaunched = helper.launchConfirmationActivity(
                     CHANGE_TRUST_AGENT_SETTINGS, preference.getTitle());
-            if (!confirmationLaunched&&  mTrustAgentClickIntent != null) {
+            if (!confirmationLaunched && mTrustAgentClickIntent != null) {
                 // If this returns false, it means no password confirmation is required.
                 startActivity(mTrustAgentClickIntent);
                 mTrustAgentClickIntent = null;
             }
+        } else if (KEY_LOCKSCREEN_ENABLED_INTERNAL.equals(key)) {
+            CMSettings.Secure.putIntForUser(getActivity().getContentResolver(),
+                    CMSettings.Secure.LOCKSCREEN_INTERNALLY_ENABLED,
+                    1, UserHandle.USER_CURRENT);
+            mLockscreenDisabledPreference.setEnabled(false);
+            mLockscreenDisabledPreference.setSummary(
+                    R.string.lockscreen_disabled_by_qs_tile_summary_enabled);
         } else {
             // If we didn't handle it, let preferences handle it.
             return super.onPreferenceTreeClick(preferenceScreen, preference);
@@ -752,7 +788,7 @@ public class SecuritySettings extends SettingsPreferenceFragment
             }
         } else if (KEY_SMS_SECURITY_CHECK_PREF.equals(key)) {
             int smsSecurityCheck = Integer.valueOf((String) value);
-            Settings.Secure.putInt(getContentResolver(), Settings.Global.SMS_OUTGOING_CHECK_MAX_COUNT,
+            Settings.Global.putInt(getContentResolver(), Settings.Global.SMS_OUTGOING_CHECK_MAX_COUNT,
                     smsSecurityCheck);
             updateSmsSecuritySummary(smsSecurityCheck);
         }

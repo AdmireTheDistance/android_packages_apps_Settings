@@ -20,11 +20,11 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceScreen;
 
-import com.android.internal.logging.MetricsLogger;
 import com.android.settings.R;
 import com.android.settings.SettingsPreferenceFragment;
 import com.android.settings.Utils;
 import com.android.internal.telephony.util.BlacklistUtils;
+import org.cyanogenmod.internal.logging.CMMetricsLogger;
 
 /**
  * Privacy settings
@@ -32,6 +32,7 @@ import com.android.internal.telephony.util.BlacklistUtils;
 public class PrivacySettings extends SettingsPreferenceFragment {
 
     private static final String KEY_BLACKLIST = "blacklist";
+    private static final String KEY_STATS = "cmstats";
 
     private PreferenceScreen mBlacklist;
 
@@ -45,8 +46,14 @@ public class PrivacySettings extends SettingsPreferenceFragment {
         // Add package manager to check if features are available
         PackageManager pm = getPackageManager();
 
+        boolean isOwner = Utils.isUserOwner();
+        if (!isOwner) {
+            PreferenceScreen root = getPreferenceScreen();
+            root.removePreference(findPreference(KEY_STATS));
+        }
+
         // Determine options based on device telephony support
-        if (!pm.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)) {
+        if (!pm.hasSystemFeature(PackageManager.FEATURE_TELEPHONY) || !isOwner) {
             // No telephony, remove dependent options
             PreferenceScreen root = getPreferenceScreen();
             root.removePreference(mBlacklist);
@@ -55,7 +62,7 @@ public class PrivacySettings extends SettingsPreferenceFragment {
 
     @Override
     protected int getMetricsCategory() {
-        return MetricsLogger.DONT_TRACK_ME_BRO;
+        return CMMetricsLogger.PRIVACY_SETTINGS;
     }
 
     @Override

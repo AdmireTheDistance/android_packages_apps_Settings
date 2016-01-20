@@ -16,16 +16,9 @@
 package com.android.settings.profiles;
 
 import android.app.Activity;
-import com.android.internal.logging.MetricsLogger;
-import cyanogenmod.profiles.AirplaneModeSettings;
 import android.app.AlertDialog;
-import cyanogenmod.profiles.BrightnessSettings;
-import cyanogenmod.profiles.ConnectionSettings;
 import android.app.Dialog;
 import android.app.NotificationGroup;
-import cyanogenmod.profiles.LockSettings;
-import cyanogenmod.profiles.RingModeSettings;
-import cyanogenmod.profiles.StreamSettings;
 import android.app.admin.DevicePolicyManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.ContentResolver;
@@ -66,6 +59,12 @@ import android.widget.TextView;
 import cyanogenmod.app.Profile;
 import cyanogenmod.app.ProfileGroup;
 import cyanogenmod.app.ProfileManager;
+import cyanogenmod.profiles.AirplaneModeSettings;
+import cyanogenmod.profiles.BrightnessSettings;
+import cyanogenmod.profiles.ConnectionSettings;
+import cyanogenmod.profiles.LockSettings;
+import cyanogenmod.profiles.RingModeSettings;
+import cyanogenmod.profiles.StreamSettings;
 
 import com.android.settings.R;
 import com.android.settings.SettingsActivity;
@@ -74,8 +73,8 @@ import com.android.settings.cyanogenmod.DeviceUtils;
 import com.android.settings.SettingsPreferenceFragment;
 import com.android.settings.profiles.actions.ItemListAdapter;
 import com.android.settings.profiles.actions.item.AirplaneModeItem;
-import com.android.settings.profiles.actions.item.BrightnessItem;
 import com.android.settings.profiles.actions.item.AppGroupItem;
+import com.android.settings.profiles.actions.item.BrightnessItem;
 import com.android.settings.profiles.actions.item.ConnectionOverrideItem;
 import com.android.settings.profiles.actions.item.DisabledItem;
 import com.android.settings.profiles.actions.item.DozeModeItem;
@@ -87,6 +86,7 @@ import com.android.settings.profiles.actions.item.RingModeItem;
 import com.android.settings.profiles.actions.item.TriggerItem;
 import com.android.settings.profiles.actions.item.VolumeStreamItem;
 import com.android.settings.Utils;
+import org.cyanogenmod.internal.logging.CMMetricsLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,15 +133,15 @@ public class SetupActionsFragment extends SettingsPreferenceFragment
 
     boolean mNewProfileMode;
 
-    private static final int[] LOCKMODE_MAPPING = new int[]{
+    private static final int[] LOCKMODE_MAPPING = new int[] {
             Profile.LockMode.DEFAULT, Profile.LockMode.INSECURE, Profile.LockMode.DISABLE
     };
-    private static final int[] EXPANDED_DESKTOP_MAPPING = new int[]{
+    private static final int[] EXPANDED_DESKTOP_MAPPING = new int[] {
             Profile.ExpandedDesktopMode.DEFAULT,
             Profile.ExpandedDesktopMode.ENABLE,
             Profile.ExpandedDesktopMode.DISABLE
     };
-    private static final int[] DOZE_MAPPING = new int[]{
+    private static final int[] DOZE_MAPPING = new int[] {
             Profile.DozeMode.DEFAULT,
             Profile.DozeMode.ENABLE,
             Profile.DozeMode.DISABLE
@@ -205,7 +205,7 @@ public class SetupActionsFragment extends SettingsPreferenceFragment
         }
 
         // connection overrides
-        mItems.add(new Header(getString(R.string.profile_connectionoverrides_title)));
+        mItems.add(new Header(getString(R.string.wireless_networks_settings_title)));
         if (DeviceUtils.deviceSupportsBluetooth()) {
             mItems.add(new ConnectionOverrideItem(PROFILE_CONNECTION_BLUETOOTH,
                     mProfile.getSettingsForConnection(PROFILE_CONNECTION_BLUETOOTH)));
@@ -281,11 +281,11 @@ public class SetupActionsFragment extends SettingsPreferenceFragment
                                 mProfile.getDefaultGroup().getUuid())));
             }
         }
-        if (groupsAdded > 0) {
-            // add dummy "add/remove app groups" entry
+        if (mProfileManager.getNotificationGroups().length > 0) {
+            // if there are notification groups available, allow them to be configured
             mItems.add(new AppGroupItem());
-        } else {
-            // remove the header since there are no options
+        } else if (groupsAdded == 0) {
+            // no notification groups available at all, nothing to add/remove
             mItems.remove(mItems.get(mItems.size() - 1));
         }
 
@@ -806,26 +806,33 @@ public class SetupActionsFragment extends SettingsPreferenceFragment
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         boolean allow2g = true;
 
+        // config_prefer_2g in p/s/Telephony
+        // if false, 2g is not available.
         try {
-            final Context telephonyContext = getActivity().createPackageContext("com.android.phone", 0);
+            final Context telephonyContext = getActivity()
+                    .createPackageContext("com.android.phone", 0);
             if (telephonyContext != null) {
-                int identifier = telephonyContext.getResources().getIdentifier("config_prefer_2g", "bool", telephonyContext.getPackageName());
+                int identifier = telephonyContext.getResources().getIdentifier("config_prefer_2g",
+                        "bool", telephonyContext.getPackageName());
                 if (identifier > 0) {
                     allow2g = telephonyContext.getResources().getBoolean(identifier);
                     android.util.Log.e("ro", "allow2g: " + allow2g);
                 }
             }
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            // hmmm....
         }
 
         final String[] connectionNames =
                 getResources().getStringArray(allow2g ? R.array.profile_networkmode_entries_4g
                         : R.array.profile_networkmode_entries_no_2g);
-        final String[] connectionValues = getResources().getStringArray(allow2g ? R.array.profile_networkmode_values_4g : R.array.profile_networkmode_values_no_2g); 
 
-        int defaultIndex = connectionValues.length - 1;
+        final String[] connectionValues =
+                getResources().getStringArray(allow2g ? R.array.profile_networkmode_values_4g
+                        : R.array.profile_networkmode_values_no_2g);
+        int defaultIndex = connectionValues.length - 1; // no action is the last
         if (setting.isOverride()) {
+            // need to match the value
             final int value = setting.getValue();
             for (int i = 0; i < connectionValues.length; i++) {
                 if (Integer.parseInt(connectionValues[i]) == value) {
@@ -1118,6 +1125,6 @@ public class SetupActionsFragment extends SettingsPreferenceFragment
 
     @Override
     protected int getMetricsCategory() {
-        return MetricsLogger.DONT_TRACK_ME_BRO;
+        return CMMetricsLogger.SETUP_ACTIONS_FRAGMENT;
     }
 }
