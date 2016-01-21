@@ -7168,4 +7168,7 @@
     <string name="morningstar_title">ROM built by Morningstar</string>
     <string name="morningstar_summary">Click to buy me a beer!</string>
 
+    <!-- Power menu screen record -->
+    <string name="power_menu_screen_record_title">Screen record</string>
+
 </resources>

@@ -69,4 +69,9 @@
         android:title="@string/power_menu_sound_title"
         android:defaultValue="true" />
 
+        <CheckBoxPreference
+        	android:key="screen_record"
+        	android:title="@string/power_menu_screen_record_title"
+        	android:defaultValue="false" />
+
 </PreferenceScreen>

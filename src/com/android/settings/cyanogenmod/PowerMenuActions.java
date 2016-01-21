@@ -17,6 +17,7 @@
 package com.android.settings.cyanogenmod;
 
 import android.content.Context;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.UserInfo;
 import android.content.res.Resources;
@@ -58,6 +59,7 @@ public class PowerMenuActions extends SettingsPreferenceFragment {
     private CheckBoxPreference mSilentPref;
     private CheckBoxPreference mVoiceAssistPref;
     private CheckBoxPreference mAssistPref;
+    private CheckBoxPreference mScreenRecordPref;
 
     Context mContext;
     private ArrayList<String> mLocalUserConfig = new ArrayList<String>();
@@ -102,6 +104,8 @@ public class PowerMenuActions extends SettingsPreferenceFragment {
                 mSilentPref = (CheckBoxPreference) findPreference(GLOBAL_ACTION_KEY_VOICEASSIST);
             } else if (action.equals(GLOBAL_ACTION_KEY_ASSIST)) {
                 mSilentPref = (CheckBoxPreference) findPreference(GLOBAL_ACTION_KEY_ASSIST);
+            } else if (action.equals(GLOBAL_ACTION_KEY_SCREEN_RECORD)) {
+            	mScreenRecordPref = (CheckBoxPreference) findPreference(GLOBAL_ACTION_KEY_SCREEN_RECORD);
             }
         }
 
@@ -166,6 +170,10 @@ public class PowerMenuActions extends SettingsPreferenceFragment {
             mAssistPref.setChecked(settingsArrayContains(GLOBAL_ACTION_KEY_ASSIST));
         }
 
+        if (mScreenRecordPref != null) {
+        	mScreenshotPref.setChecked(settingsArrayContains(GLOBAL_ACTION_KEY_SCREEN_RECORD));
+        }
+
         updatePreferences();
     }
 
@@ -218,6 +226,10 @@ public class PowerMenuActions extends SettingsPreferenceFragment {
         } else if (preference == mAssistPref) {
             value = mAssistPref.isChecked();
             updateUserConfig(value, GLOBAL_ACTION_KEY_ASSIST);
+
+        } else if (preference == mScreenRecordPref) {
+        	value = mScreenRecordPref.isChecked();
+        	updateUserConfig(value, GLOBAL_ACTION_KEY_SCREEN_RECORD);
 
         } else {
             return super.onPreferenceTreeClick(preferenceScreen, preference);
