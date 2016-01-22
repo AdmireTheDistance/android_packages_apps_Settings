@@ -96,6 +96,26 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+    	android:key="lockscreen"
+    	android:title="@string/category_lockscreen">
+
+    	<com.android.settings.SystemSettingSwitchPreference
+    		android:key="lockscreen_see_through"
+    		android:title="@string/lockscreen_blur_title"
+    		android:summary="@string/lockscreen_blur_summary"
+    		android:defaultValue="false" />
+
+    	<com.android.settings.SeekBarPreference
+    		android:key="lockscreen_blur_radius"
+    		android:title="@string/lockscreen_blur_radius"
+    		android:max="25"
+    		settings:min="0"
+    		android:defaultValue="14"
+    		android:dependency="lockscreen_see_through" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="system"
         android:title="@string/category_system">
     
