@@ -7171,10 +7171,4 @@
     <!-- Power menu screen record -->
     <string name="power_menu_screen_record_title">Screen record</string>
 
-    <!-- Lockscreen blur -->
-    <string name="lockscreen_blur_title">Lockscreen blur</string>
-    <string name="lockscreen_blur_summary">Adds a blur effect and displays the content behind the lockscreen.</string>
-    <string name="lockscreen_blur_radius">Blur intensity</string>
-    <string name="category_lockscreen">Lockscreen</string>
-
 </resources>

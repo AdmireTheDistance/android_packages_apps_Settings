@@ -52,7 +52,6 @@ import com.android.internal.logging.MetricsLogger;
 import com.android.settings.R;
 import com.android.settings.morningstar.AbstractAsyncSuCMDProcessor;
 import com.android.settings.morningstar.ExposedAnimationDrawable;
-import com.android.settings.SeekBarPreference;
 import com.android.settings.SettingsPreferenceFragment;
 
 import java.io.BufferedReader;
@@ -79,14 +78,12 @@ public class ExtraSettings extends SettingsPreferenceFragment implements
     private static final String KEY_CATEGORY_RECENTS = "recents";
     private static final String KEY_CATEGORY_SYSTEM = "system";
     private static final String KEY_CATEGORY_STATUSBAR = "statusbar";
-    private static final String KEY_CATEGORY_LOCKSCREEN = "lockscreen";
     private static final String KEY_TOAST_ANIMATION = "toast_animation";
     private static final String KEY_LISTVIEW_ANIMATION = "listview_animation";
     private static final String KEY_LISTVIEW_INTERPOLATOR = "listview_interpolator";
     private static final String KEY_BOOT_ANIMATION = "boot_animation";
     private static final String KEY_SHOW_CLEAR_ALL_RECENTS = "show_clear_all_recents";
     private static final String KEY_RECENTS_CLEAR_ALL_LOCATION = "recents_clear_all_location";
-    private static final String KEY_LOCKSCREEN_BLUR_RADIUS = "lockscreen_blur_radius";
     private static final String systemPath = "/system/media/bootanimation.zip";
 
     private static final int bootAniRequest = 201;
@@ -97,7 +94,6 @@ public class ExtraSettings extends SettingsPreferenceFragment implements
     private Preference mBootAnimation;
     private SwitchPreference mRecentsClearAll;
     private ListPreference mRecentsClearAllLocation;
-    private SeekBarPreference mBlurRadius;
 
     private AlertDialog bootAnimationDialog;
     private String bootAnimationPath;
@@ -122,8 +118,6 @@ public class ExtraSettings extends SettingsPreferenceFragment implements
                 findPreference(KEY_CATEGORY_SYSTEM);
         PreferenceCategory statusbarPrefs = (PreferenceCategory)
                 findPreference(KEY_CATEGORY_STATUSBAR);
-        PreferenceCategory lockscreenPrefs = (PreferenceCategory)
-                findPreference(KEY_CATEGORY_LOCKSCREEN);
         
 
         mToastAnimation = (ListPreference) findPreference(KEY_TOAST_ANIMATION);
@@ -158,11 +152,6 @@ public class ExtraSettings extends SettingsPreferenceFragment implements
         mRecentsClearAllLocation.setSummary(mRecentsClearAllLocation.getEntry());
         mRecentsClearAllLocation.setOnPreferenceChangeListener(this);
 
-        mBlurRadius = (SeekBarPreference) findPreference(KEY_LOCKSCREEN_BLUR_RADIUS);
-        mBlurRadius.setValue(Settings.System.getInt(resolver,
-                Settings.System.LOCKSCREEN_BLUR_RADIUS, 14));
-        mBlurRadius.setOnPreferenceChangeListener(this);
-
         resetAnimation();
     }
 
@@ -187,31 +176,31 @@ public class ExtraSettings extends SettingsPreferenceFragment implements
         ContentResolver resolver = getActivity().getContentResolver();
         if (preference == mToastAnimation) {
             int index = mToastAnimation.findIndexOfValue((String) objValue);
-            Settings.System.putString(resolver, Settings.System.TOAST_ANIMATION, (String) objValue);
+            Settings.System.putString(getContentResolver(), Settings.System.TOAST_ANIMATION, (String) objValue);
             mToastAnimation.setSummary(mToastAnimation.getEntries()[index]);
             Toast.makeText(getActivity(), "Toast animation changed", Toast.LENGTH_SHORT).show();
-        } else if (preference == mListViewAnimation) {
+        }
+        if (preference == mListViewAnimation) {
             int value = Integer.parseInt((String) objValue);
             int index = mListViewAnimation.findIndexOfValue((String) objValue);
-            Settings.System.putInt(resolver,
+            Settings.System.putInt(getContentResolver(),
                     Settings.System.LISTVIEW_ANIMATION, value);
             mListViewAnimation.setSummary(mListViewAnimation.getEntries()[index]);
             mListViewInterpolator.setEnabled(value > 0);
-        } else if (preference == mListViewInterpolator) {
+        }
+        if (preference == mListViewInterpolator) {
             int value = Integer.parseInt((String) objValue);
             int index = mListViewInterpolator.findIndexOfValue((String) objValue);
-            Settings.System.putInt(resolver,
+            Settings.System.putInt(getContentResolver(),
                     Settings.System.LISTVIEW_INTERPOLATOR, value);
             mListViewInterpolator.setSummary(mListViewInterpolator.getEntries()[index]);
-        } else if (preference == mRecentsClearAllLocation) {
+        }
+        if (preference == mRecentsClearAllLocation) {
             int location = Integer.valueOf((String) objValue);
             int index = mRecentsClearAllLocation.findIndexOfValue((String) objValue);
-            Settings.System.putIntForUser(resolver,
+            Settings.System.putIntForUser(getActivity().getContentResolver(),
                     Settings.System.RECENTS_CLEAR_ALL_LOCATION, location, UserHandle.USER_CURRENT);
             mRecentsClearAllLocation.setSummary(mRecentsClearAllLocation.getEntries()[index]);
-        } else if (preference == mBlurRadius) {
-            int width = ((Integer) objValue).intValue();
-            Settings.System.putInt(resolver, Settings.System.LOCKSCREEN_BLUR_RADIUS, width);
         }
         return true;
     }
