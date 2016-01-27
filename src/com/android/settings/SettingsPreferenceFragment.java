@@ -532,4 +532,8 @@ public abstract class SettingsPreferenceFragment extends InstrumentedPreferenceF
             return false;
         }
     }
+
+    public void setTitle(int id) {
+        getActivity().setTitle(id);
+    }
 }

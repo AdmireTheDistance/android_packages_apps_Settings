@@ -75,6 +75,7 @@ public class ExtraSettings extends SettingsPreferenceFragment implements
     private static final String TAG = "ExtraSettings";
 
     private static final String KEY_CATEGORY_ANIMATION = "animation";
+    private static final String KEY_CATEGORY_DASH = "settings_dashboard";
     private static final String KEY_CATEGORY_RECENTS = "recents";
     private static final String KEY_CATEGORY_SYSTEM = "system";
     private static final String KEY_CATEGORY_STATUSBAR = "statusbar";
@@ -84,6 +85,7 @@ public class ExtraSettings extends SettingsPreferenceFragment implements
     private static final String KEY_BOOT_ANIMATION = "boot_animation";
     private static final String KEY_SHOW_CLEAR_ALL_RECENTS = "show_clear_all_recents";
     private static final String KEY_RECENTS_CLEAR_ALL_LOCATION = "recents_clear_all_location";
+    private static final String POWER_MENU_ANIMATION = "power_menu_animation";
     private static final String systemPath = "/system/media/bootanimation.zip";
 
     private static final int bootAniRequest = 201;
@@ -94,6 +96,7 @@ public class ExtraSettings extends SettingsPreferenceFragment implements
     private Preference mBootAnimation;
     private SwitchPreference mRecentsClearAll;
     private ListPreference mRecentsClearAllLocation;
+    private ListPreference mPowerMenuAnimation;
 
     private AlertDialog bootAnimationDialog;
     private String bootAnimationPath;
@@ -118,23 +121,25 @@ public class ExtraSettings extends SettingsPreferenceFragment implements
                 findPreference(KEY_CATEGORY_SYSTEM);
         PreferenceCategory statusbarPrefs = (PreferenceCategory)
                 findPreference(KEY_CATEGORY_STATUSBAR);
+        PreferenceCategory dashboardPrefs = (PreferenceCategory)
+                findPreference(KEY_CATEGORY_DASH);
         
 
         mToastAnimation = (ListPreference) findPreference(KEY_TOAST_ANIMATION);
         mToastAnimation.setSummary(mToastAnimation.getEntry());
-        int currentToastAnimation = Settings.System.getInt(getContentResolver(), Settings.System.TOAST_ANIMATION, 1);
+        int currentToastAnimation = Settings.System.getInt(resolver, Settings.System.TOAST_ANIMATION, 1);
         mToastAnimation.setValueIndex(currentToastAnimation);
         mToastAnimation.setOnPreferenceChangeListener(this);
 
         mListViewAnimation = (ListPreference) findPreference(KEY_LISTVIEW_ANIMATION);
-        int listviewanimation = Settings.System.getInt(getContentResolver(),
+        int listviewanimation = Settings.System.getInt(resolver,
                 Settings.System.LISTVIEW_ANIMATION, 0);
         mListViewAnimation.setValue(String.valueOf(listviewanimation));
         mListViewAnimation.setSummary(mListViewAnimation.getEntry());
         mListViewAnimation.setOnPreferenceChangeListener(this);
 
         mListViewInterpolator = (ListPreference) findPreference(KEY_LISTVIEW_INTERPOLATOR);
-        int listviewinterpolator = Settings.System.getInt(getContentResolver(),
+        int listviewinterpolator = Settings.System.getInt(resolver,
                 Settings.System.LISTVIEW_INTERPOLATOR, 0);
         mListViewInterpolator.setValue(String.valueOf(listviewinterpolator));
         mListViewInterpolator.setSummary(mListViewInterpolator.getEntry());
@@ -151,6 +156,12 @@ public class ExtraSettings extends SettingsPreferenceFragment implements
         mRecentsClearAllLocation.setValue(String.valueOf(location));
         mRecentsClearAllLocation.setSummary(mRecentsClearAllLocation.getEntry());
         mRecentsClearAllLocation.setOnPreferenceChangeListener(this);
+
+        mPowerMenuAnimation = (ListPreference) findPreference(POWER_MENU_ANIMATION);
+        mPowerMenuAnimation.setValue(String.valueOf(Settings.System.getInt(resolver,
+                Settings.System.POWER_MENU_ANIMATION, 0)));
+        mPowerMenuAnimation.setSummary(mPowerMenuAnimation.getEntry());
+        mPowerMenuAnimation.setOnPreferenceChangeListener(this);
 
         resetAnimation();
     }
@@ -176,14 +187,14 @@ public class ExtraSettings extends SettingsPreferenceFragment implements
         ContentResolver resolver = getActivity().getContentResolver();
         if (preference == mToastAnimation) {
             int index = mToastAnimation.findIndexOfValue((String) objValue);
-            Settings.System.putString(getContentResolver(), Settings.System.TOAST_ANIMATION, (String) objValue);
+            Settings.System.putString(resolver, Settings.System.TOAST_ANIMATION, (String) objValue);
             mToastAnimation.setSummary(mToastAnimation.getEntries()[index]);
             Toast.makeText(getActivity(), "Toast animation changed", Toast.LENGTH_SHORT).show();
         }
         if (preference == mListViewAnimation) {
             int value = Integer.parseInt((String) objValue);
             int index = mListViewAnimation.findIndexOfValue((String) objValue);
-            Settings.System.putInt(getContentResolver(),
+            Settings.System.putInt(resolver,
                     Settings.System.LISTVIEW_ANIMATION, value);
             mListViewAnimation.setSummary(mListViewAnimation.getEntries()[index]);
             mListViewInterpolator.setEnabled(value > 0);
@@ -191,16 +202,22 @@ public class ExtraSettings extends SettingsPreferenceFragment implements
         if (preference == mListViewInterpolator) {
             int value = Integer.parseInt((String) objValue);
             int index = mListViewInterpolator.findIndexOfValue((String) objValue);
-            Settings.System.putInt(getContentResolver(),
+            Settings.System.putInt(resolver,
                     Settings.System.LISTVIEW_INTERPOLATOR, value);
             mListViewInterpolator.setSummary(mListViewInterpolator.getEntries()[index]);
         }
         if (preference == mRecentsClearAllLocation) {
             int location = Integer.valueOf((String) objValue);
             int index = mRecentsClearAllLocation.findIndexOfValue((String) objValue);
-            Settings.System.putIntForUser(getActivity().getContentResolver(),
+            Settings.System.putIntForUser(resolver,
                     Settings.System.RECENTS_CLEAR_ALL_LOCATION, location, UserHandle.USER_CURRENT);
             mRecentsClearAllLocation.setSummary(mRecentsClearAllLocation.getEntries()[index]);
+        }
+        if (preference == mPowerMenuAnimation) {
+            Settings.System.putInt(resolver, Settings.System.POWER_MENU_ANIMATION,
+                    Integer.valueOf((String) objValue));
+            mPowerMenuAnimation.setValue(String.valueOf(objValue));
+            mPowerMenuAnimation.setSummary(mPowerMenuAnimation.getEntry());
         }
         return true;
     }

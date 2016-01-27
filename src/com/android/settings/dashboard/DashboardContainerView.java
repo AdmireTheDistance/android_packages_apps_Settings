@@ -18,6 +18,8 @@ package com.android.settings.dashboard;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +39,10 @@ public class DashboardContainerView extends ViewGroup {
         final Resources res = context.getResources();
         mCellGapX = res.getDimension(R.dimen.dashboard_cell_gap_x);
         mCellGapY = res.getDimension(R.dimen.dashboard_cell_gap_y);
-        mNumColumns = res.getInteger(R.integer.dashboard_num_columns);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean twoColumns = prefs.getBoolean("dashboard_columns", false);
+        mNumColumns = twoColumns ? 2 : res.getInteger(R.integer.dashboard_num_columns);
     }
 
     @Override

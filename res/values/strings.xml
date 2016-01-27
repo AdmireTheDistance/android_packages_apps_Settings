@@ -7171,4 +7171,48 @@
     <!-- Power menu screen record -->
     <string name="power_menu_screen_record_title">Screen record</string>
 
+    <!-- AOKP custom system animations -->
+    <string name="animation_title">Animations</string>  
+    <string name="system_animation_title">System animations</string>
+    <string name="activity_open_title">Activity open animation</string>
+    <string name="activity_close_title">Activity close animation</string>
+    <string name="task_open_title">Task open animation</string>
+    <string name="task_close_title">Task close animation</string>
+    <string name="task_open_behind_title">Task open behind animation</string>
+    <string name="task_move_to_front_title">Move to front animation</string>
+    <string name="task_move_to_back_title">Move to back animation</string>
+    <string name="wallpaper_open_title">Wallpaper open animation</string>
+    <string name="wallpaper_close_title">Wallpaper close animation</string>
+    <string name="wallpaper_intra_open_title">Wallpaper intra open animation</string>
+    <string name="wallpaper_intra_close_title">Wallpaper intra close animation</string>
+    <string name="animation_duration_title">Animation duration</string>
+    <string name="title_animation_no_override">Prevent app overrides</string>
+    <string name="summary_animation_no_override">Prevent apps from overriding transitions</string>
+    <string name="animation_duration_default">Default</string>
+    <string name="animation_exit_only_title">Enter only animation</string>
+    <string name="animation_exit_only_summary">Only show enter animation</string>
+    <string name="animation_reverse_exit_title">Reverse exit animation</string>
+    <string name="animation_reverse_exit_summary">Exit animation is enter animation reversed</string>
+
+    <!-- Power menu animation -->
+    <string name="power_menu_animation_title">Power menu animation</string>
+    <string name="power_menu_animation_summary">Change the enter/exit animation of the power menu</string>
+    <string name="power_menu_animation_dialog_title">Select power menu animation</string>
+    <string name="power_menu_animation_aosp">AOSP (default)</string>
+    <string name="power_menu_animation_bottom">Bottom</string>
+    <string name="power_menu_animation_top">Top</string>
+    <string name="power_menu_animation_rotate">Rotate</string>
+    <string name="power_menu_animation_xylon">Fly</string>
+    <string name="power_menu_animation_slide">Slide</string>
+    <string name="power_menu_animation_turn">Turn</string>
+    <string name="power_menu_animation_fly">Glow</string>
+    <string name="power_menu_animation_card">3D</string>
+    <string name="power_menu_animation_translucent_top">Translucent (top)</string>
+    <string name="power_menu_animation_translucent_bottom">Translucent (bottom)</string>
+
+    <!-- Dashboard columns -->
+    <string name="category_dashboard">Dashboard</string>
+    <string name="dashboard_columns_title">Dashboard columns</string>
+    <string name="dashboard_columns_summary">Show 2 columns in portrait mode</string>
+
 </resources>
