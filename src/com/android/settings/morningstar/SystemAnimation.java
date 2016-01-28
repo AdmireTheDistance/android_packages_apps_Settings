@@ -223,18 +223,17 @@ public class SystemAnimation extends SettingsPreferenceFragment implements OnPre
                     Settings.System.ACTIVITY_ANIMATIONS[10], val);
         } else if (preference == mAnimationDuration) {
             int val = Integer.parseInt((String) newValue);
-            Settings.System.putInt(resolver,
+            result = Settings.System.putInt(resolver,
                     Settings.System.ACTIVITY_ANIMATION_DURATION, val);
         } else if (preference == mAnimNoOverride) {
             boolean value = (Boolean) newValue;
-            Settings.System.putInt(resolver, Settings.System.ANIMATION_NO_OVERRIDE,
-                    value ? 1 : 0);
+            result = Settings.System.putInt(resolver, Settings.System.ANIMATION_NO_OVERRIDE, value ? 1 : 0);
         } else if (preference == mAnimExitOnly) {
             boolean value = (Boolean) newValue;
-            Settings.System.putInt(resolver, Settings.System.ANIMATION_EXIT_ONLY, value ? 1 : 0);
+            result = Settings.System.putInt(resolver, Settings.System.ANIMATION_EXIT_ONLY, value ? 1 : 0);
         } else if (preference == mAnimReverseOnly) {
             boolean value = (Boolean) newValue;
-            Settings.System.putInt(resolver, Settings.System.ANIMATION_REVERSE_EXIT, value ? 1 : 0);
+            result = Settings.System.putInt(resolver, Settings.System.ANIMATION_REVERSE_EXIT, value ? 1 : 0);
         }
         preference.setSummary(getProperSummary(preference));
         return result;
